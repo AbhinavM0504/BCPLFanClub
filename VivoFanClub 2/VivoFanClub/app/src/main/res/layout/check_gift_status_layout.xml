@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/closeImgBtn"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_gravity="end|top"
+        android:layout_margin="2dp"
+        android:background="@drawable/btn_primary"
+        android:elevation="15dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_close"
+        android:tint="@color/white"
+        app:civ_border_color="@color/light_background"
+        app:civ_border_width="1dp" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/giftTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:padding="5dp"
+                android:text="Check you gift now"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold|italic" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@id/giftTv"
+                android:padding="10dp"
+                android:src="@drawable/ic_contact_no"
+                app:tint="@color/light_background" />
+
+            <EditText
+                android:id="@+id/contactNoEt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/giftTv"
+                android:layout_toEndOf="@id/imageView"
+                android:backgroundTint="@color/light_background"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/light_background"
+                android:hint="Enter your contact No."
+                android:inputType="number"
+                android:maxLength="12"
+                android:padding="5dp"
+                android:textCursorDrawable="@drawable/color_cursor" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/checkGiftBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/contactNoEt"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/light_background"
+                android:text="Check"
+                android:textColor="@color/white" />
+
+            <!--Gift Status Layout-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/giftCv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/checkGiftBtn"
+                android:visibility="gone"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:id="@+id/giftLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:visibility="gone">
+
+                    <!--Gift Available Layout-->
+                    <LinearLayout
+                        android:id="@+id/giftAvailableLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/giftMsgTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:text="Congratulation you hav won 500 Cashback"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <FrameLayout
+                            android:layout_width="180dp"
+                            android:layout_height="180dp"
+                            android:layout_gravity="center">
+
+                            <ImageView
+                                android:id="@+id/checkGiftIv"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_horizontal"
+                                android:adjustViewBounds="true"
+                                android:background="@drawable/giftbox"
+                                android:scaleType="fitXY"
+                                tools:ignore="ContentDescription" />
+
+                            <ProgressBar
+                                android:id="@+id/progressBar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:indeterminateTint="@color/light_background" />
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:id="@+id/giftAnimation"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:lottie_colorFilter="@color/white"
+                                app:lottie_loop="true"
+                                app:lottie_rawRes="@raw/scratch_complete"
+                                app:lottie_repeatMode="restart"
+                                app:lottie_scale="@integer/material_motion_duration_medium_1" />
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                    <!--Gift Not Available Layout-->
+                    <LinearLayout
+                        android:id="@+id/giftNotAvailableLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp"
+                        android:visibility="gone">
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:layout_width="180dp"
+                            android:layout_height="180dp"
+                            android:layout_gravity="center"
+                            app:lottie_autoPlay="true"
+                            app:lottie_loop="true"
+                            app:lottie_rawRes="@raw/no_result"
+                            app:lottie_repeatMode="restart"
+                            app:lottie_scale="@integer/material_motion_duration_medium_1" />
+
+                        <TextView
+                            android:id="@+id/giftMsgTv1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:hint="Contact No is not registered yet..."
+                            android:padding="5dp"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/participateBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:backgroundTint="@color/light_background"
+                            android:text="Participate Now"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+</FrameLayout>

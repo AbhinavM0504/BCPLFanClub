@@ -1,0 +1,12 @@
+[01-Oct-2022 00:14:47 America/Boise] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function sendOtp(), 2 passed in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 107 and exactly 3 expected in /home1/thrsprot/public_html/fanclub_api/sendOtp.php:36
+Stack trace:
+#0 /home1/thrsprot/public_html/fanclub_api/sendOtp.php(107): sendOtp(800630, '9116802178')
+#1 {main}
+  thrown in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 36
+[01-Oct-2022 00:21:25 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73
+[01-Oct-2022 00:22:25 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73
+[01-Oct-2022 00:23:39 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73
+[01-Oct-2022 00:24:16 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73
+[01-Oct-2022 00:29:31 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73
+[01-Oct-2022 00:31:58 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73
+[01-Oct-2022 00:33:34 America/Boise] PHP Warning:  mysqli_query() expects parameter 1 to be mysqli, null given in /home1/thrsprot/public_html/fanclub_api/sendOtp.php on line 73

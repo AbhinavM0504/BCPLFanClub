@@ -1,0 +1,141 @@
+<resources>
+    <string name="app_name">BCPLFanClub</string>
+    <string name="heading_text">Be ready to challenge your luck</string>
+    <string name="gift_terms_condition"><u><font color="#0A75A5">Terms and Conditions</font></u> for Exciting Gifts</string>
+    <string name="bumper_terms_conditions"><u><font color="#0A75A5">Terms and Conditions</font></u> for Bumper Gifts</string>
+
+    <!--Question_1-->
+    <string name="question_one">1. Can you tell us how satisfied you are with the overall experience of your purchase? \n\n क्या आप हमें बता सकते हैं कि आप अपने स्मार्टफोन की खरीदारी के अनुभव से कितने संतुष्ट हैं?</string>
+    <string name="select_option">Select Option</string>
+    <string name="highly_satisfied">Highly satisfied</string>
+    <string name="satisfied">Satisfied</string>
+    <string name="neutral">Neutral</string>
+    <string name="unsatisfied">Unsatisfied</string>
+    <string name="highly_unsatisfied">Highly Unsatisfied</string>
+    <string-array name="ansArray_1">
+        <item>@string/select_option</item>
+        <item>@string/highly_satisfied</item>
+        <item>@string/satisfied</item>
+        <item>@string/neutral</item>
+        <item>@string/unsatisfied</item>
+        <item>@string/highly_unsatisfied</item>
+    </string-array>
+
+    <!--Question 2A-->
+    <string name="question_2A">1.1 What did you like the most?\n\nआपकी संतुष्टि के क्या कारण हैं?</string>
+    <string name="product">Product</string>
+    <string name="customer_service">Customer Service</string>
+    <string name="store_ambience">Store Ambience</string>
+    <string name="offers_discounts">Offers &amp; Discounts</string>
+    <string-array name="ansArray_2A">
+        <item>@string/select_option</item>
+        <item>@string/product</item>
+        <item>@string/customer_service</item>
+        <item>@string/store_ambience</item>
+        <item>@string/offers_discounts</item>
+    </string-array>
+
+    <!--Question 2B-->
+    <string name="question_2B">1.1 What is the reason of your Dissatisfaction?\n\nआपके असंतोष का कारण क्या है?</string>
+    <string name="service">Service</string>
+    <string name="affordability_offers">Affordability Offers</string>
+    <string-array name="ansArray_2B">
+        <item>@string/select_option</item>
+        <item>@string/service</item>
+        <item>@string/store_ambience</item>
+        <item>@string/affordability_offers</item>
+    </string-array>
+
+    <!--Question 3-->
+    <string name="question_3">2. Which smartphone Brand were you using before purchasing this smartphone?\n\nइस स्मार्टफोन को खरीदने से पहले आप किस स्मार्टफोन ब्रांड का इस्तेमाल कर रहे थे?</string>
+    <string name="vivo">Vivo</string>
+    <string name="samsung">Samsung</string>
+    <string name="apple">Apple</string>
+    <string name="one_plus">Oneplus</string>
+    <string name="real_me">Realme</string>
+    <string name="oppo">Oppo</string>
+    <string name="redmi_xiaomi">Redmi/ Xiaomi</string>
+    <string name="lava">Lava</string>
+    <string name="others">Others</string>
+    <string-array name="ansArray_3">
+        <item>@string/select_option</item>
+        <item>@string/vivo</item>
+        <item>@string/samsung</item>
+        <item>@string/apple</item>
+        <item>@string/one_plus</item>
+        <item>@string/real_me</item>
+        <item>@string/oppo</item>
+        <item>@string/redmi_xiaomi</item>
+        <item>@string/lava</item>
+        <item>@string/others</item>
+    </string-array>
+
+    <!--Question 4A-->
+    <string name="question_4A">2.1. Please select the reason for purchasing Vivo again?\n\nफिर से Vivo खरीदने के कारण का चयन करें?</string>
+    <string name="product_specifications">Product Specifications</string>
+    <string name="price">Price</string>
+    <string name="experience">Experience</string>
+    <string name="brand_value">Brand Value</string>
+    <string-array name="ansArray_4A">
+        <item>@string/select_option</item>
+        <item>@string/product_specifications</item>
+        <item>@string/price</item>
+        <item>@string/experience</item>
+        <item>@string/brand_value</item>
+    </string-array>
+
+    <!--Question 4B-->
+    <string name="question_4B">2.1. Why did you choose vivo smartphone over other brands?\n\nआपको खरीदे गए उत्पाद के बारे में जानकारी कैसे मिली?</string>
+    <string name="product_demonstration_by_vivo_promoter">Product demonstration by vivo promoter</string>
+    <string name="brand_awareness">Brand Awareness</string>
+    <string-array name="ansArray_4B">
+        <item>@string/select_option</item>
+        <item>@string/product_specifications</item>
+        <item>@string/price</item>
+        <item>@string/product_demonstration_by_vivo_promoter</item>
+        <item>@string/brand_awareness</item>
+    </string-array>
+
+    <!--Question 5-->
+    <string name="question_5">3. How did you get the information about the purchased product?\n\nआपने अन्य ब्रांडों पर विवो स्मार्टफोन क्यों चुना?</string>
+    <string name="social_media">Social Media platforms (FB/Instagram/YouTube)</string>
+    <string name="outshop_branding">Outshop Branding (Posters, Banners etc.)</string>
+    <string name="friends_family">Friends and Family</string>
+    <string name="advertisements">Advertisements</string>
+    <string name="in_shop_promoter">In-shop Promoter/ Retailer</string>
+    <string-array name="ansArray_5">
+        <item>@string/select_option</item>
+        <item>@string/social_media</item>
+        <item>@string/outshop_branding</item>
+        <item>@string/friends_family</item>
+        <item>@string/advertisements</item>
+        <item>@string/in_shop_promoter</item>
+    </string-array>
+
+    <!--Question 6-->
+    <string name="question_6">4.How likely would you recommend to purchase vivo smartphone to a friend or colleague? \n\nक्या आप किसी मित्र या सहकर्मी को वीवो स्मार्टफोन खरीदने की सलाह देंगे? </string>
+    <string name="rate_1">1</string>
+    <string name="rate_2">2</string>
+    <string name="rate_3">3</string>
+    <string name="rate_4">4</string>
+    <string name="rate_5">5</string>
+    <string name="rate_6">6</string>
+    <string name="rate_7">7</string>
+    <string name="rate_8">8</string>
+    <string name="rate_9">9</string>
+    <string name="rate_10">10</string>
+    <string-array name="ansArray_6">
+        <item>@string/select_option</item>
+        <item>@string/rate_1</item>
+        <item>@string/rate_2</item>
+        <item>@string/rate_3</item>
+        <item>@string/rate_4</item>
+        <item>@string/rate_5</item>
+        <item>@string/rate_6</item>
+        <item>@string/rate_7</item>
+        <item>@string/rate_8</item>
+        <item>@string/rate_9</item>
+        <item>@string/rate_10</item>
+    </string-array>
+
+</resources>
