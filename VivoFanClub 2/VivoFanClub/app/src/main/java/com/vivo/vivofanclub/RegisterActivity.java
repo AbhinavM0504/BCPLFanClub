@@ -74,9 +74,6 @@ import com.vivo.vivofanclub.Common.NetworkChangeListener;
 import com.vivo.vivofanclub.Common.URLs;
 import com.yalantis.ucrop.UCrop;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,7 +104,8 @@ public class RegisterActivity extends AppCompatActivity {
     //IMAGE VARIABLES
     private String[] cameraPermissions;
     private static final int CAMERA_REQUEST_CODE = 100;
-    private static final int IMAGE_PICK_CAMERA_CODE = 102;
+    private static final int IMAGE_PICK_CAMERA_CODE = 101;
+
     JSONObject jsonObject;
     RequestQueue rQueue;
     private Uri imageUri = null, customer_image_uri = null, customer_invoice_image_uri = null;
@@ -284,7 +282,7 @@ public class RegisterActivity extends AppCompatActivity {
         addCustomerImgBtn.setOnClickListener(v -> {
             closeKeyboard();
             value = "customer_image";
-            if (!checkCameraPermission()) {
+            if (checkCameraPermission()) {
                 requestCameraPermission();
             } else {
                 pickFromCamera();
@@ -295,7 +293,7 @@ public class RegisterActivity extends AppCompatActivity {
         addInvoiceImgBtn.setOnClickListener(v -> {
             closeKeyboard();
             value = "customer_invoice_image";
-            if (!checkCameraPermission()) {
+            if (checkCameraPermission()) {
                 requestCameraPermission();
             } else {
                 pickFromCamera();
@@ -520,27 +518,72 @@ public class RegisterActivity extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Pick");
         values.put(MediaStore.Images.Media.DESCRIPTION, "Sample Image description");
-        //put image uri
+
+        // Put image URI
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-        //intent to open camera for image
+        // Intent to open camera for image capture
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
     }
-
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13+ (API 33+), request READ_MEDIA_* permissions
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.READ_MEDIA_AUDIO
+                    }, CAMERA_REQUEST_CODE);
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            // For Android 10 and below, request WRITE_EXTERNAL_STORAGE permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    }, CAMERA_REQUEST_CODE);
+        } else {
+            // For Android 11 and 12, request CAMERA permission only
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA
+                    }, CAMERA_REQUEST_CODE);
+        }
     }
 
     private boolean checkCameraPermission() {
-        boolean result = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean result1 = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        // Check CAMERA permission
+        boolean cameraPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
 
-        return result && result1;
+        // Check WRITE_EXTERNAL_STORAGE permission (for SDK versions <= 29)
+        boolean writePermission = true;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            writePermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        // For Android 13+ (API level 33+), check new media permissions
+        boolean readImagesPermission = true;
+        boolean readVideoPermission = true;
+        boolean readAudioPermission = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            readImagesPermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
+            readVideoPermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED;
+            readAudioPermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        // Return true if all permissions are granted
+        return cameraPermission && writePermission && readImagesPermission
+                && readVideoPermission && readAudioPermission;
     }
+
+
 
     private void getCurrentLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -674,18 +717,16 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (requestCode == CAMERA_REQUEST_CODE) {
             if (grantResults.length > 0) {
-                try {
-                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                boolean storageAccepted = grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED;
 
-                    if (cameraAccepted && storageAccepted) {
-                        pickFromCamera();
-                    } else {
-                        showToast("Camera permissions are required");
-                    }
-                } catch (Exception e) {
-                    Log.e("Error", e.toString());
+                if (cameraAccepted && storageAccepted) {
+                    pickFromCamera();
+                } else {
+                    showToast("Camera permissions are required");
                 }
+            } else {
+                showToast("Camera permissions are required");
             }
         }
     }
@@ -762,7 +803,8 @@ public class RegisterActivity extends AppCompatActivity {
         loadingDialog.showDialog("Verifying...");
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.verifyOtpUrl, response -> {
-            loadingDialog.hideDialog();
+            if(loadingDialog!=null){
+            loadingDialog.hideDialog();}
             Log.d("VERIFY OTP RESPONSE", response.trim());
             showToast(response);
 
@@ -791,7 +833,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
         }, error -> {
-            loadingDialog.hideDialog();
+            if(loadingDialog!=null){
+                loadingDialog.hideDialog();}
             Log.e("VERIFY OTP ERROR", error.toString());
             showToast(error.toString());
         }) {
@@ -835,12 +878,13 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void sendOtp(String name, String number, String imeiNo) {
+
         loadingDialog.showDialog("Loading...");
 
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.sendOtpUrl, response -> {
-                loadingDialog.hideDialog();
-                Log.d("SEND OTP RESPONSE", response.trim());
+                if(loadingDialog!=null){
+                    loadingDialog.hideDialog();}                Log.d("SEND OTP RESPONSE", response.trim());
 
                 try {
                     JSONObject object = new JSONObject(response);
@@ -858,8 +902,8 @@ public class RegisterActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }, error -> {
-                loadingDialog.hideDialog();
-                Log.e("SEND OTP ERROR", error.toString());
+                if(loadingDialog!=null){
+                    loadingDialog.hideDialog();}                Log.e("SEND OTP ERROR", error.toString());
                 showToast(error.toString());
             }) {
                 @NonNull
@@ -946,7 +990,10 @@ public class RegisterActivity extends AppCompatActivity {
         otpLayout.setVisibility(View.GONE);
         qrScan = new IntentIntegrator(RegisterActivity.this);
         resultReceiver = new AddressResultReceiver(new Handler());
-        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        cameraPermissions = new String[]{ Manifest.permission.CAMERA,
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_AUDIO};
 
     }
 }

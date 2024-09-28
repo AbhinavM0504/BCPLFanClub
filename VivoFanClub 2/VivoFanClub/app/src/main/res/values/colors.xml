@@ -18,4 +18,6 @@
     <color name="verified_color">#60C82C</color>
     <color name="link_color">#0A75A5</color>
     <color name="colorSuccess">#EF3A3A</color>
+    <color name="dark_gray">#4A4A4A</color>
+    <color name="light_gray">#d3d3d3</color>
 </resources>

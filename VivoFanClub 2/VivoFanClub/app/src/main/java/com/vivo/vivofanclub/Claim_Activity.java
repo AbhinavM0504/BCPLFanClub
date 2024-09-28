@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+
+import com.google.android.material.textfield.TextInputLayout;
 import com.vivo.vivofanclub.adapter.GiftAdapter;
 
 import android.net.Uri;
@@ -42,6 +44,7 @@ import com.google.android.gms.location.LocationRequest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -81,15 +84,17 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Claim_Activity extends AppCompatActivity {
-    LinearLayout numberLayout, otpLayout;
-    TextInputEditText etNumberField, etOtpField, etAadharField,etPanField;
+    LinearLayout numberLayout, otpLayout,aadharInput,panInput,getaadharFront,getAadharBack, getPanImage;
+    TextInputEditText etNumberField, etOtpField, etAadharField,etPanField,etEmailField;
     Button btnSendOtp, btnVerifyOtp, btnSubmit, addAadharFrontImgBtn,addAadharBacktImgBtn,addPanImgBtn;
     LoadingDialog loadingDialog;
     CountDownTimer countDownTimer;
-    TextView tvTextSlider, tvTimer,tvFullName,tvImeiNumber,tvAddress,tvPinCode;
+    TextView tvTextSlider, tvTimer,tvFullName,tvImeiNumber,tvAddress,tvPinCode,emailInstruction,numberInstruction;
+    TextInputLayout email_layout;
 
     String value = "", aadhar_front_image_name = "", aadhar_back_image_name = "",pan_image_name="";
     TableLayout details_card;
+    CardView details_card_1;
     private ResultReceiver resultReceiver;
     private TextView tvLatLong;
     private ProgressBar progressBar;
@@ -205,6 +210,7 @@ public class Claim_Activity extends AppCompatActivity {
             String pin = Objects.requireNonNull(tvPinCode.getText()).toString().trim();
             String aadharNumber = Objects.requireNonNull(etAadharField.getText()).toString().trim();
             String panNumber = Objects.requireNonNull(etPanField.getText()).toString().trim();
+            String email=Objects.requireNonNull(etEmailField.getText()).toString().trim();
 
             // Validation checks
             if (name.isEmpty()) {
@@ -271,6 +277,8 @@ public class Claim_Activity extends AppCompatActivity {
                             bundle.putString("aadharFrontImageName", aadhar_front_image_name);
                             bundle.putString("aadharBackImageName", aadhar_back_image_name);
                             bundle.putString("panImageName", pan_image_name);
+                            bundle.putString("email", email);
+
 
                             // Execute AsyncTask to save data to the backend
                             new SaveDataToDb().execute(bundle);
@@ -293,8 +301,16 @@ public class Claim_Activity extends AppCompatActivity {
 
     private class SaveDataToDb extends AsyncTask<Bundle, Void, Boolean> {
         JSONObject jsonObject;
-        RequestQueue requestQueue;
+        RequestQueue requestQueue;  // Declare the RequestQueue as an instance variable
         Bitmap cAadharFrontImageBitmap = null, cAadharBackImageBitmap = null, cPanImageBitmap = null;
+        String errorMessage = "";  // Store any error messages
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Initialize the requestQueue in onPreExecute to avoid the null pointer issue
+            requestQueue = Volley.newRequestQueue(Claim_Activity.this);
+        }
 
         @Override
         protected Boolean doInBackground(Bundle... bundles) {
@@ -314,6 +330,7 @@ public class Claim_Activity extends AppCompatActivity {
                 String aadharFrontImageName = bundle.getString("aadharFrontImageName", "");
                 String aadharBackImageName = bundle.getString("aadharBackImageName", "");
                 String panImageName = bundle.getString("panImageName", "");
+                String email=bundle.getString("email","");
 
                 // Convert images to Base64
                 cAadharFrontImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(aadharFrontImageUri));
@@ -353,6 +370,7 @@ public class Claim_Activity extends AppCompatActivity {
                 jsonObject.put("modelName", Build.MODEL);
                 jsonObject.put("manufacturerName", Build.MANUFACTURER);
                 jsonObject.put("activationTime", dateString);
+                jsonObject.put("email",email);
 
                 // Create a request to submit data to the backend
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URLs.saveData, jsonObject,
@@ -364,20 +382,22 @@ public class Claim_Activity extends AppCompatActivity {
                                 String status = response.getString("status");
                                 String message = response.getString("message");
                                 if (status.equalsIgnoreCase("true")) {
-                                    showToast(message);
+                                    // Successful response handling
+                                    errorMessage = message;
                                     startActivity(new Intent(Claim_Activity.this, MainActivity.class));
                                     finish();
+                                    // Store message for UI thread
                                 } else {
-                                    showToast(message);
+                                    errorMessage = message;  // Store message for UI thread
                                 }
                             } catch (JSONException e) {
                                 Log.e("JSON EXCEPTION", e.toString());
-                                showToast("JSON parsing error: " + e.getMessage());
+                                errorMessage = "JSON parsing error: " + e.getMessage();  // Handle error
                             }
                         }, error -> {
                     loadingDialog.hideDialog();
                     Log.e("IMAGE ERROR", error.toString());
-                    showToast("Network error: " + error.getMessage());
+                    errorMessage = "Network error: " + error.getMessage();  // Handle network error
                 });
 
                 jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
@@ -385,27 +405,37 @@ public class Claim_Activity extends AppCompatActivity {
                         DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                         DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-                // Initialize the request queue and add the request
-                requestQueue = Volley.newRequestQueue(Claim_Activity.this);
+                // Add the request to the queue
                 requestQueue.add(jsonObjectRequest);
 
             } catch (IOException e) {
                 Log.e("IO EXCEPTION", e.toString());
                 loadingDialog.hideDialog();
-                showToast("Image processing error: " + e.getMessage());
+                errorMessage = "Image processing error: " + e.getMessage();  // Store error message
                 return false;
             } catch (JSONException e) {
                 Log.e("JSON EXCEPTION", e.toString());
                 loadingDialog.hideDialog();
-                showToast("JSON error: " + e.getMessage());
+                errorMessage = "JSON error: " + e.getMessage();  // Store error message
                 return false;
             } catch (Exception e) {
                 Log.e("EXCEPTION", e.toString());
                 loadingDialog.hideDialog();
-                showToast("Unexpected error: " + e.getMessage());
+                errorMessage = "Unexpected error: " + e.getMessage();  // Store error message
                 return false;
             }
             return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            // Now, handle the Toast and UI updates on the main thread
+            if (result) {
+                showToast(errorMessage);  // Show message from response
+            } else {
+                showToast(errorMessage);  // Show error message
+            }
         }
     }
 
@@ -414,10 +444,7 @@ public class Claim_Activity extends AppCompatActivity {
 
 
 
-
-
-
-        private void getCurrentLocation() {
+    private void getCurrentLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(Claim_Activity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -533,10 +560,11 @@ public class Claim_Activity extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Pick");
         values.put(MediaStore.Images.Media.DESCRIPTION, "Sample Image description");
-        //put image uri
+
+        // Put image URI
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-        //intent to open camera for image
+        // Intent to open camera for image capture
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
@@ -548,8 +576,31 @@ public class Claim_Activity extends AppCompatActivity {
 
 
     private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // For Android 13+ (API 33+), request READ_MEDIA_* permissions
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_VIDEO,
+                            Manifest.permission.READ_MEDIA_AUDIO
+                    }, CAMERA_REQUEST_CODE);
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            // For Android 10 and below, request WRITE_EXTERNAL_STORAGE permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    }, CAMERA_REQUEST_CODE);
+        } else {
+            // For Android 11 and 12, request CAMERA permission only
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.CAMERA
+                    }, CAMERA_REQUEST_CODE);
+        }
     }
+
 
 
 
@@ -559,11 +610,35 @@ public class Claim_Activity extends AppCompatActivity {
 
 
     private boolean checkCameraPermission() {
-        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        // Check CAMERA permission
+        boolean cameraPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
 
-        return result && result1;
+        // Check WRITE_EXTERNAL_STORAGE permission (for SDK versions <= 29)
+        boolean writePermission = true;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            writePermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        // For Android 13+ (API level 33+), check new media permissions
+        boolean readImagesPermission = true;
+        boolean readVideoPermission = true;
+        boolean readAudioPermission = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            readImagesPermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED;
+            readVideoPermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED;
+            readAudioPermission = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        // Return true if all permissions are granted
+        return cameraPermission && writePermission && readImagesPermission
+                && readVideoPermission && readAudioPermission;
     }
+
 
 
 
@@ -623,7 +698,7 @@ public class Claim_Activity extends AppCompatActivity {
                     0,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
+            RequestQueue requestQueue = Volley.newRequestQueue(Claim_Activity.this);
             requestQueue.add(stringRequest);
         } catch (Exception e) {
             e.printStackTrace();
@@ -656,8 +731,22 @@ public class Claim_Activity extends AppCompatActivity {
                 btnVerifyOtp.setEnabled(false);
                 btnVerifyOtp.setAlpha(0.6f);
                 setCard();
-                TableLayout card_view=findViewById(R.id.details_card);
+                numberInstruction.setVisibility(View.GONE);
+                numberLayout.setVisibility(View.GONE);
+                otpLayout.setVisibility(View.GONE);
+                emailInstruction.setVisibility(View.VISIBLE);
+
+                email_layout.setVisibility(View.VISIBLE);
                 details_card.setVisibility(View.VISIBLE);
+                details_card_1.setVisibility(View.VISIBLE);
+                aadharInput.setVisibility(View.VISIBLE);
+                getaadharFront.setVisibility(View.VISIBLE);
+                getAadharBack.setVisibility(View.VISIBLE);
+                getPanImage.setVisibility(View.VISIBLE);
+                panInput.setVisibility(View.VISIBLE);
+
+
+
 
 
 
@@ -898,12 +987,37 @@ public class Claim_Activity extends AppCompatActivity {
         tvImeiNumber = findViewById(R.id.tvImeiNumber);
         tvAddress = findViewById(R.id.tvAddress);
         tvPinCode = findViewById(R.id.tvPinCode);
+        aadharInput=findViewById(R.id.aadharInputLayout);
+        panInput=findViewById(R.id.panInputLayout);
+        getaadharFront=findViewById(R.id.aadharFront);
+        getAadharBack=findViewById(R.id.aadharBack);
+        getPanImage=findViewById(R.id.panImage);
+        details_card_1=findViewById(R.id.details_card_1);
+        numberInstruction=findViewById(R.id.tvInstruction);
+        emailInstruction=findViewById(R.id.tvEmailInstruction);
+        etEmailField=findViewById(R.id.etEmailField);
+        email_layout=findViewById(R.id.email_input);
 
         btnSubmit.setEnabled(false);
         btnSubmit.setAlpha(0.6f);
-        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        cameraPermissions = new String[]{ Manifest.permission.CAMERA,
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_AUDIO};
         resultReceiver = new AddressResultReceiver(new Handler());
         tvLatLong = findViewById(R.id.tvLatLong);
+        numberInstruction.setVisibility(View.VISIBLE);
+        email_layout.setVisibility(View.GONE);
+        emailInstruction.setVisibility(View.GONE);
+        aadharInput.setVisibility(View.GONE);
+        panInput.setVisibility(View.GONE);
+        getaadharFront.setVisibility(View.GONE);
+        getAadharBack.setVisibility(View.GONE);
+        getPanImage.setVisibility(View.GONE);
+        details_card_1.setVisibility(View.GONE);
+        details_card.setVisibility(View.GONE);
+
+
 
 
 

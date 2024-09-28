@@ -10,8 +10,7 @@ public class URLs {
     public static final String verifyClaimOtp="https://3sprotect.com/fanclub_api/verify_claim_otp.php";
     public static final String saveDataToDbUrl = APP_BASE_URL + "saveDataToDb.php";
     public static final String checkValidImeiUrl = APP_BASE_URL + "checkValidImei.php";
-    public static final String saveData = APP_BASE_URL + "testData ,so modify the API accordingly" +
-            ".php";
+    public static final String saveData = APP_BASE_URL + "test.php";
     public static final String claim_otp = APP_BASE_URL + "get_card_details.php";
 
     //Main Activity
